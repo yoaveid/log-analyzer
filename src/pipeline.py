@@ -51,5 +51,6 @@ def run(log_path: Path, output_path: Path) -> None:
         stats=stats,
         anomalies=all_anomalies,
         cache_hit_rate=cache.hit_rate,
+        llm_stats=llm.to_dict(),
         output_path=output_path,
     )

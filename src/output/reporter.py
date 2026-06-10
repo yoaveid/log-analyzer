@@ -12,6 +12,7 @@ def write_report(
     stats: LogStats,
     anomalies: Sequence[Anomaly],
     cache_hit_rate: float,
+    llm_stats: dict,
     output_path: Path,
 ) -> None:
     """Write a structured JSON summary to output_path."""
@@ -20,6 +21,7 @@ def write_report(
             **stats.to_dict(),
             "cache_hit_rate": cache_hit_rate,
         },
+        "llm_health": llm_stats,
         "anomalies": [
             {
                 "kind": a.kind,
