@@ -67,6 +67,10 @@ class EmbeddingStore:
         """Merge updates into an existing entry's metadata (e.g. add LLM results)."""
         self._metadata[index].update(updates)
 
+    def iter_metadata(self) -> list[dict[str, Any]]:
+        """Return a shallow copy of all stored metadata dicts."""
+        return list(self._metadata)
+
     @property
     def size(self) -> int:
         return self._index.ntotal

@@ -32,12 +32,12 @@ def run(log_path: Path, output_path: Path) -> None:
         all_anomalies += detector.process_entry(entry)
 
         if entry.level in CRITICAL_LEVELS:
-            cached = cache.get(entry.message)
+            cached = cache.get(entry)
             if cached:
                 root_cause, mitigation = cached
             else:
                 root_cause, mitigation = llm.analyze(entry)
-                cache.set(entry.message, root_cause, mitigation)
+                cache.set(entry, root_cause, mitigation)
 
             enriched_errors.append(EnrichedLogEntry(
                 **entry.model_dump(),
@@ -52,5 +52,6 @@ def run(log_path: Path, output_path: Path) -> None:
         anomalies=all_anomalies,
         cache_hit_rate=cache.hit_rate,
         llm_stats=llm.to_dict(),
+        top_recurring=cache.top_recurring(k=5),
         output_path=output_path,
     )

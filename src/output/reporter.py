@@ -13,6 +13,7 @@ def write_report(
     anomalies: Sequence[Anomaly],
     cache_hit_rate: float,
     llm_stats: dict,
+    top_recurring: list[dict],
     output_path: Path,
 ) -> None:
     """Write a structured JSON summary to output_path."""
@@ -22,6 +23,18 @@ def write_report(
             "cache_hit_rate": cache_hit_rate,
         },
         "llm_health": llm_stats,
+        "top_recurring_errors": [
+            {
+                "message": m.get("message"),
+                "service": m.get("service"),
+                "hit_count": m.get("hit_count"),
+                "first_seen": m.get("first_seen"),
+                "last_seen": m.get("last_seen"),
+                "root_cause": m.get("root_cause"),
+                "mitigation": m.get("mitigation"),
+            }
+            for m in top_recurring
+        ],
         "anomalies": [
             {
                 "kind": a.kind,
