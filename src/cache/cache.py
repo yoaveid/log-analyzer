@@ -11,21 +11,21 @@ class AnalysisCache:
     Similarity-based cache backed by the shared EmbeddingStore.
 
     Tier 1 — sim >= high_threshold AND age < staleness_days
-        → confident HIT
+        -> confident HIT
 
     Tier 2 — low_threshold <= sim < high_threshold AND same service AND same level AND age < recency_window_seconds
-        → conditional HIT
+        -> conditional HIT
 
     Tier 3 — otherwise
-        → MISS, call LLM
+        -> MISS, call LLM
     """
 
     def __init__(
         self,
         store: EmbeddingStore,
         embedder: Embedder,
-        high_threshold: float = 0.85,
-        low_threshold: float = 0.75,
+        high_threshold: float = 0.9,
+        low_threshold: float = 0.8,
         recency_window_seconds: int = 300,
         staleness_days: int = 30,
     ):
@@ -105,10 +105,6 @@ class AnalysisCache:
     def hit_rate(self) -> float:
         total = self._hits + self._misses
         return round(self._hits / total, 4) if total else 0.0
-
-    # ------------------------------------------------------------------
-    # Internal helpers
-    # ------------------------------------------------------------------
 
     def _hit(self, result: SearchResult) -> tuple[str, str]:
         self._hits += 1

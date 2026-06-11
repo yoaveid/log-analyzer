@@ -15,11 +15,12 @@ from src.store.normalizer import LogNormalizer
 def run(log_path: Path, output_path: Path) -> None:
     """Orchestrate ingestion -> anomaly detection -> enrichment -> reporting."""
     normalizer = LogNormalizer()
-    store = EmbeddingStore()
+    knowledge_store = EmbeddingStore()   # all log entries — feeds novelty detection
+    llm_store = EmbeddingStore()         # CRITICAL/ERROR with LLM results — feeds cache
     embedder = Embedder(normalizer=normalizer)
     stats = LogStats()
-    detector = AnomalyDetector(store=store, embedder=embedder)
-    cache = AnalysisCache(store=store, embedder=embedder)
+    detector = AnomalyDetector(store=knowledge_store, embedder=embedder)
+    cache = AnalysisCache(store=llm_store, embedder=embedder)
     llm = LLMClient()
 
     enriched_errors = []
@@ -32,6 +33,8 @@ def run(log_path: Path, output_path: Path) -> None:
 
         stats.update(entry)
         cluster_id = normalizer.parse(entry.message).cluster_id
+        emb = embedder.encode(entry.message)
+        knowledge_store.add(emb, {"message": entry.message, "level": entry.level.value})
         all_anomalies += detector.process_entry(entry, cluster_id)
 
         if entry.level in CRITICAL_LEVELS:

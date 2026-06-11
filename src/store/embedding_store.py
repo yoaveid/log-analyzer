@@ -21,18 +21,11 @@ class SearchResult:
 class EmbeddingStore:
     """
     In-memory FAISS index with arbitrary per-vector metadata.
-
-    Designed so save() / load() are the only two methods that need
-    to change when switching to file-based persistence.
     """
 
     def __init__(self, dim: int = _EMBED_DIM):
         self._index = faiss.IndexFlatIP(dim)  # inner product = cosine sim on normalized vecs
         self._metadata: list[dict[str, Any]] = []
-
-    # ------------------------------------------------------------------
-    # Core operations
-    # ------------------------------------------------------------------
 
     def add(self, embedding: np.ndarray, metadata: dict[str, Any]) -> int:
         """Store a normalized embedding + metadata. Returns its index."""
@@ -74,15 +67,3 @@ class EmbeddingStore:
     @property
     def size(self) -> int:
         return self._index.ntotal
-
-    # ------------------------------------------------------------------
-    # Persistence — no-ops now, swap in two lines for file-based later:
-    #   faiss.write_index(self._index, str(path / "index.faiss"))
-    #   import json; (path / "metadata.json").write_text(json.dumps(self._metadata))
-    # ------------------------------------------------------------------
-
-    def save(self, path: Path) -> None:
-        pass
-
-    def load(self, path: Path) -> None:
-        pass

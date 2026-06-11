@@ -32,10 +32,6 @@ class NoveltyDetector:
         is_novel = result is None or result.similarity < self._threshold
 
         if is_novel:
-            self._store.add(emb, {
-                "message": entry.message,
-                "timestamp": str(entry.timestamp),
-            })
             return Anomaly(
                 kind="novel_log",
                 description=f'Novel log pattern: "{entry.message[:80]}"',
