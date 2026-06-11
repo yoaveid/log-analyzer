@@ -1,29 +1,48 @@
-import re
+from dataclasses import dataclass
 
-# Rules applied in order — most specific patterns must come first
-# to avoid partial matches swallowing tokens meant for later rules.
-_RULES: list[tuple[re.Pattern, str]] = [
-    (re.compile(r'\b[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}\b', re.I), '<UUID>'),
-    (re.compile(r'\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?::\d+)?\b'),       '<IP>'),
-    (re.compile(r'https?://\S+'),                                              '<URL>'),
-    (re.compile(r'(?<!\w)/(?:[\w./-]+)'),                                     '<PATH>'),
-    (re.compile(r'\b0x[0-9a-fA-F]+\b'),                                       '<HEX>'),
-    (re.compile(r'\b\d+\b'),                                                   '<ID>'),
-]
+from drain3 import TemplateMiner
+
+
+@dataclass
+class ParseResult:
+    template: str
+    cluster_id: int
 
 
 class LogNormalizer:
     """
-    Strips variable data from log messages before embedding.
-
-    "auth failed for user_id=32"      → "auth failed for user_id=<ID>"
-    "db retry in 30 seconds"          → "db retry in <ID> seconds"
-    "db retry in 60 seconds"          → "db retry in <ID> seconds"  ← same result
-    "connect to 10.0.0.1:5432 failed" → "connect to <IP> failed"
+    Uses the DRAIN algorithm (via drain3) to extract log templates.
     """
 
+    def __init__(self):
+        self._miner = TemplateMiner()
+
+    def parse(self, message: str) -> ParseResult:
+        """
+        Register a message with drain3 and return its template + cluster ID.
+        Call this ONCE per message from the pipeline before any downstream
+        processing.
+        """
+        try:
+            result = self._miner.add_log_message(message)
+            if result is None:
+                return ParseResult(template=message, cluster_id=-1)
+            return ParseResult(
+                template=result["template_mined"],
+                cluster_id=result["cluster_id"],
+            )
+        except Exception:
+            return ParseResult(template=message, cluster_id=-1)
+
     def normalize(self, message: str) -> str:
-        text = message.lower().strip()
-        for pattern, placeholder in _RULES:
-            text = pattern.sub(placeholder, text)
-        return re.sub(r'\s+', ' ', text).strip()
+        """
+        Return the template for a message WITHOUT modifying drain3 state.
+        Falls back to parse() only if the message was never registered.
+        """
+        try:
+            cluster = self._miner.match(message)
+            if cluster is not None:
+                return cluster.get_template()
+        except Exception:
+            pass
+        return self.parse(message).template

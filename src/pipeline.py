@@ -4,17 +4,19 @@ from src.ingestion.parser import parse_file
 from src.models.log_entry import EnrichedLogEntry
 from src.enrichment.llm_client import LLMClient
 from src.cache.cache import AnalysisCache
-from src.analyzer.anomaly import AnomalyDetector, CRITICAL_LEVELS
-from src.analyzer.stats import LogStats
+from src.analyzer.anomaly import AnomalyDetector
+from src.analyzer.stats import CRITICAL_LEVELS, LogStats
 from src.output.reporter import write_report
 from src.store.embedding_store import EmbeddingStore
 from src.store.embedder import Embedder
+from src.store.normalizer import LogNormalizer
 
 
 def run(log_path: Path, output_path: Path) -> None:
-    """Orchestrate ingestion → enrichment → reporting."""
+    """Orchestrate ingestion -> anomaly detection -> enrichment -> reporting."""
+    normalizer = LogNormalizer()
     store = EmbeddingStore()
-    embedder = Embedder()
+    embedder = Embedder(normalizer=normalizer)
     stats = LogStats()
     detector = AnomalyDetector(store=store, embedder=embedder)
     cache = AnalysisCache(store=store, embedder=embedder)
@@ -29,7 +31,8 @@ def run(log_path: Path, output_path: Path) -> None:
             continue
 
         stats.update(entry)
-        all_anomalies += detector.process_entry(entry)
+        cluster_id = normalizer.parse(entry.message).cluster_id
+        all_anomalies += detector.process_entry(entry, cluster_id)
 
         if entry.level in CRITICAL_LEVELS:
             cached = cache.get(entry)
