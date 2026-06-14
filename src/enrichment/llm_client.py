@@ -1,9 +1,19 @@
 import json
 import re
+from typing import Protocol
 
 from langchain_ollama import OllamaLLM
 
 from src.models.log_entry import LogEntry
+
+
+class LLMClientProtocol(Protocol):
+    total_requests: int
+    retry_count: int
+    failed_requests: int
+
+    def analyze(self, entry: LogEntry) -> tuple[str, str]: ...
+    def to_dict(self) -> dict: ...
 
 _JSON_RE = re.compile(r"\{.*?\}", re.DOTALL)
 

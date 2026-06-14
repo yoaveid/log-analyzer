@@ -3,7 +3,7 @@ from typing import Optional
 
 from src.models.log_entry import LogEntry
 from src.store.embedding_store import EmbeddingStore, SearchResult
-from src.store.embedder import Embedder
+from src.store.embedder import EmbedderProtocol
 
 
 class AnalysisCache:
@@ -23,7 +23,7 @@ class AnalysisCache:
     def __init__(
         self,
         store: EmbeddingStore,
-        embedder: Embedder,
+        embedder: EmbedderProtocol,
         high_threshold: float = 0.9,
         low_threshold: float = 0.8,
         recency_window_seconds: int = 300,

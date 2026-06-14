@@ -4,7 +4,7 @@ from typing import Optional
 
 from src.models.log_entry import LogEntry
 from src.store.embedding_store import EmbeddingStore
-from src.store.embedder import Embedder
+from src.store.embedder import EmbedderProtocol
 from src.models.anomaly import Anomaly
 
 
@@ -13,15 +13,15 @@ class NoveltyDetector:
 
     def __init__(
         self,
+        store: EmbeddingStore,
+        embedder: EmbedderProtocol,
         threshold: float = 0.65,
         min_store_size: int = 30,
-        store: Optional[EmbeddingStore] = None,
-        embedder: Optional[Embedder] = None,
     ):
         self._threshold = threshold
         self._min_store_size = min_store_size
-        self._store = store or EmbeddingStore()
-        self._embedder = embedder or Embedder()
+        self._store = store
+        self._embedder = embedder
 
     def check(self, entry: LogEntry) -> Optional[Anomaly]:
         if self._store.size <= self._min_store_size:

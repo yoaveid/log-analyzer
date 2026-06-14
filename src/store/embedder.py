@@ -1,9 +1,13 @@
 import importlib
-from typing import Optional
+from typing import Optional, Protocol
 
 import numpy as np
 
 from src.store.normalizer import LogNormalizer
+
+
+class EmbedderProtocol(Protocol):
+    def encode(self, text: str) -> np.ndarray: ...
 
 
 class Embedder:
