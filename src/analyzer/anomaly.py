@@ -3,6 +3,7 @@ from __future__ import annotations
 from src.models.log_entry import LogEntry
 from src.store.embedding_store import EmbeddingStore
 from src.store.embedder import EmbedderProtocol
+from src.config.settings import AnomalyConfig
 from src.models.anomaly import Anomaly
 from src.analyzer.spike_detector import SpikeDetector
 from src.analyzer.burst_detector import BurstDetector
@@ -16,24 +17,19 @@ class AnomalyDetector:
         self,
         store: EmbeddingStore,
         embedder: EmbedderProtocol,
-        burst_threshold: int = 5,
-        novelty_threshold: float = 0.65,
-        size_store_threshold: int = 3,
-        spike_bucket_seconds: int = 60,
-        spike_z_threshold: float = 2.5,
-        spike_min_history: int = 5,
+        config: AnomalyConfig,
     ):
         self._spike = SpikeDetector(
-            bucket_seconds=spike_bucket_seconds,
-            z_threshold=spike_z_threshold,
-            min_history=spike_min_history,
+            bucket_seconds=config.spike.bucket_seconds,
+            z_threshold=config.spike.z_threshold,
+            min_history=config.spike.min_history,
         )
-        self._burst = BurstDetector(threshold=burst_threshold)
+        self._burst = BurstDetector(threshold=config.burst_threshold)
         self._novel = NoveltyDetector(
             store=store,
             embedder=embedder,
-            threshold=novelty_threshold,
-            min_store_size=size_store_threshold,
+            threshold=config.novelty_threshold,
+            min_store_size=config.min_store_size,
         )
 
     def process_entry(self, entry: LogEntry, cluster_id: int = -1) -> list[Anomaly]:

@@ -5,6 +5,7 @@ from typing import Protocol
 from langchain_ollama import OllamaLLM
 
 from src.models.log_entry import LogEntry
+from src.config.settings import LLMConfig
 
 
 class LLMClientProtocol(Protocol):
@@ -39,9 +40,9 @@ class LLMClient:
 
     Log message: {message}"""
 
-    def __init__(self, max_retries: int = 3):
-        self.llm = OllamaLLM(model="gemma:2b", base_url="http://localhost:11434")
-        self._max_retries = max_retries
+    def __init__(self, config: LLMConfig):
+        self.llm = OllamaLLM(model=config.model, base_url=config.base_url)
+        self._max_retries = config.max_retries
         self.total_requests = 0
         self.retry_count = 0
         self.failed_requests = 0

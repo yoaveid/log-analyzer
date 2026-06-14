@@ -4,6 +4,7 @@ from typing import Optional, Protocol
 import numpy as np
 
 from src.store.normalizer import LogNormalizer
+from src.config.settings import EmbedderConfig
 
 
 class EmbedderProtocol(Protocol):
@@ -15,10 +16,10 @@ class Embedder:
 
     def __init__(
         self,
-        model_name: str = "all-MiniLM-L6-v2",
+        config: EmbedderConfig,
         normalizer: Optional[LogNormalizer] = None,
     ):
-        self._model_name = model_name
+        self._model_name = config.model
         self._model = None
         self._normalizer = normalizer or LogNormalizer()
 

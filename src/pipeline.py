@@ -11,6 +11,7 @@ from src.output.reporter import write_report
 from src.store.embedding_store import EmbeddingStore
 from src.store.embedder import Embedder, EmbedderProtocol
 from src.store.normalizer import LogNormalizer
+from src.config.settings import AppConfig, load_config
 
 
 @dataclass
@@ -25,20 +26,19 @@ class PipelineServices:
     stats: LogStats = field(default_factory=LogStats)
 
 
-def build_services() -> PipelineServices:
-    """Composition root — wires all production implementations."""
+def build_services(config: AppConfig) -> PipelineServices:
     normalizer = LogNormalizer()
     knowledge_store = EmbeddingStore()
     llm_store = EmbeddingStore()
-    embedder = Embedder(normalizer=normalizer)
+    embedder = Embedder(config=config.embedder, normalizer=normalizer)
     return PipelineServices(
-        llm=LLMClient(),
+        llm=LLMClient(config=config.llm),
         embedder=embedder,
         knowledge_store=knowledge_store,
         llm_store=llm_store,
         normalizer=normalizer,
-        detector=AnomalyDetector(store=knowledge_store, embedder=embedder),
-        cache=AnalysisCache(store=llm_store, embedder=embedder),
+        detector=AnomalyDetector(store=knowledge_store, embedder=embedder, config=config.anomaly),
+        cache=AnalysisCache(store=llm_store, embedder=embedder, config=config.cache),
     )
 
 
@@ -46,9 +46,10 @@ def run(
     log_path: Path,
     output_path: Path,
     services: PipelineServices | None = None,
+    config: AppConfig | None = None,
 ) -> None:
     """Orchestrate ingestion -> anomaly detection -> enrichment -> reporting."""
-    s = services or build_services()
+    s = services or build_services(config or load_config())
 
     enriched_errors: list[EnrichedLogEntry] = []
     all_anomalies = []

@@ -4,6 +4,7 @@ from typing import Optional
 from src.models.log_entry import LogEntry
 from src.store.embedding_store import EmbeddingStore, SearchResult
 from src.store.embedder import EmbedderProtocol
+from src.config.settings import CacheConfig
 
 
 class AnalysisCache:
@@ -24,23 +25,16 @@ class AnalysisCache:
         self,
         store: EmbeddingStore,
         embedder: EmbedderProtocol,
-        high_threshold: float = 0.9,
-        low_threshold: float = 0.8,
-        recency_window_seconds: int = 300,
-        staleness_days: int = 30,
+        config: CacheConfig,
     ):
         self._store = store
         self._embedder = embedder
-        self._high = high_threshold
-        self._low = low_threshold
-        self._recency_window = timedelta(seconds=recency_window_seconds)
-        self._staleness = timedelta(days=staleness_days)
+        self._high = config.high_threshold
+        self._low = config.low_threshold
+        self._recency_window = timedelta(seconds=config.recency_window_seconds)
+        self._staleness = timedelta(days=config.staleness_days)
         self._hits = 0
         self._misses = 0
-
-    # ------------------------------------------------------------------
-    # Public interface
-    # ------------------------------------------------------------------
 
     def get(self, entry: LogEntry) -> Optional[tuple[str, str]]:
         """Return (root_cause, mitigation) if a similar entry is already cached."""

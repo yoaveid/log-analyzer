@@ -1,0 +1,22 @@
+llm:
+  model: "gemma:2b"
+  base_url: "http://localhost:11434"
+  max_retries: 3
+
+embedder:
+  model: "all-MiniLM-L6-v2"
+
+cache:
+  high_threshold: 0.9
+  low_threshold: 0.8
+  recency_window_seconds: 300
+  staleness_days: 30
+
+anomaly:
+  burst_threshold: 5
+  novelty_threshold: 0.65
+  min_store_size: 30
+  spike:
+    bucket_seconds: 60
+    z_threshold: 2.5
+    min_history: 5
