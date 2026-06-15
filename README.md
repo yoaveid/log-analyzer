@@ -52,6 +52,16 @@ The sentence-transformers embedding model (`all-MiniLM-L6-v2`) downloads automat
 ```bash
 git clone https://github.com/yoaveid/log-analyzer.git
 cd log-analyzer
+
+# Create and activate a virtual environment
+python -m venv .venv
+
+# macOS / Linux
+source .venv/bin/activate
+
+# Windows
+.venv\Scripts\activate
+
 pip install -r requirements.txt
 ```
 
