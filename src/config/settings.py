@@ -34,11 +34,17 @@ class AnomalyConfig(BaseModel):
     spike: SpikeConfig
 
 
+class LogConfig(BaseModel):
+    level: str    # DEBUG | INFO | WARNING | ERROR
+    format: str   # "text" | "json"
+
+
 class AppConfig(BaseModel):
     llm: LLMConfig
     embedder: EmbedderConfig
     cache: CacheConfig
     anomaly: AnomalyConfig
+    logging: LogConfig
 
 
 _DEFAULT_CONFIG_PATH = Path("config/settings.yaml")

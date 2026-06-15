@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 from pathlib import Path
 
+import structlog
+
 from src.ingestion.parser import parse_file
 from src.models.log_entry import EnrichedLogEntry
 from src.enrichment.llm_client import LLMClient, LLMClientProtocol
@@ -12,6 +14,8 @@ from src.store.embedding_store import EmbeddingStore
 from src.store.embedder import Embedder, EmbedderProtocol
 from src.store.normalizer import LogNormalizer
 from src.config.settings import AppConfig, load_config
+
+logger = structlog.get_logger(__name__)
 
 
 @dataclass
@@ -50,6 +54,7 @@ def run(
 ) -> None:
     """Orchestrate ingestion -> anomaly detection -> enrichment -> reporting."""
     s = services or build_services(config or load_config())
+    logger.info("pipeline_started", log_path=str(log_path))
 
     enriched_errors: list[EnrichedLogEntry] = []
     all_anomalies = []
@@ -80,6 +85,13 @@ def run(
                 cache_hit=cached is not None,
             ))
 
+    logger.info(
+        "pipeline_completed",
+        total_parsed=s.stats.total_parsed,
+        error_count=s.stats.error_count,
+        anomaly_count=len(all_anomalies),
+        cache_hit_rate=s.cache.hit_rate,
+    )
     write_report(
         entries=enriched_errors,
         stats=s.stats,

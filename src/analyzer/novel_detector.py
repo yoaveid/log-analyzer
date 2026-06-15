@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from typing import Optional
 
+import structlog
+
 from src.models.log_entry import LogEntry
+
+logger = structlog.get_logger(__name__)
 from src.store.embedding_store import EmbeddingStore
 from src.store.embedder import EmbedderProtocol
 from src.models.anomaly import Anomaly
@@ -32,6 +36,12 @@ class NoveltyDetector:
         is_novel = result is None or result.similarity < self._threshold
 
         if is_novel:
+            logger.info(
+                "novel_pattern_detected",
+                service=entry.service,
+                level=entry.level.value,
+                message=entry.message[:80],
+            )
             return Anomaly(
                 kind="novel_log",
                 description=f'Novel log pattern: "{entry.message[:80]}"',

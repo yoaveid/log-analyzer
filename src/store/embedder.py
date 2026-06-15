@@ -25,7 +25,7 @@ class Embedder:
 
     def encode(self, text: str) -> np.ndarray:
         normalized = self._normalizer.normalize(text)
-        return self._load().encode(normalized, normalize_embeddings=True)
+        return self._load().encode(normalized, normalize_embeddings=True, show_progress_bar=False)
 
     def _load(self):
         if self._model is None:

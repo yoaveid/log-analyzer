@@ -12,6 +12,10 @@ cache:
   recency_window_seconds: 300
   staleness_days: 30
 
+logging:
+  level: "INFO"       # DEBUG | INFO | WARNING | ERROR
+  format: "text"      # "text" for local dev, "json" for production
+
 anomaly:
   burst_threshold: 5
   novelty_threshold: 0.65

@@ -1,7 +1,11 @@
 from datetime import datetime, timezone, timedelta
 from typing import Optional
 
+import structlog
+
 from src.models.log_entry import LogEntry
+
+logger = structlog.get_logger(__name__)
 from src.store.embedding_store import EmbeddingStore, SearchResult
 from src.store.embedder import EmbedderProtocol
 from src.config.settings import CacheConfig
@@ -48,11 +52,14 @@ class AnalysisCache:
         sim = result.similarity
 
         if sim >= self._high and not self._is_stale(result):
+            logger.debug("cache_hit", tier=1, similarity=round(sim, 3), service=entry.service)
             return self._hit(result)
 
         if self._low <= sim < self._high and self._tier2_pass(entry, result):
+            logger.debug("cache_hit", tier=2, similarity=round(sim, 3), service=entry.service)
             return self._hit(result)
 
+        logger.debug("cache_miss", similarity=round(sim, 3), service=entry.service)
         self._misses += 1
         return None
 

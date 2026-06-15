@@ -7,3 +7,4 @@ drain3>=0.9
 sentence-transformers>=3.0
 numpy>=1.24
 faiss-cpu>=1.8
+structlog>=24.0

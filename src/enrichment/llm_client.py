@@ -2,10 +2,13 @@ import json
 import re
 from typing import Protocol
 
+import structlog
 from langchain_ollama import OllamaLLM
 
 from src.models.log_entry import LogEntry
 from src.config.settings import LLMConfig
+
+logger = structlog.get_logger(__name__)
 
 
 class LLMClientProtocol(Protocol):
@@ -56,11 +59,13 @@ class LLMClient:
             try:
                 response = self.llm.invoke(prompt)
                 return self._parse(response)
-            except Exception:
+            except Exception as e:
                 if attempt < self._max_retries - 1:
-                    self.retry_count += 1  # only retries, not the first attempt
+                    self.retry_count += 1
+                    logger.warning("llm_retry", attempt=attempt + 1, error=str(e), service=entry.service)
 
         self.failed_requests += 1
+        logger.error("llm_call_failed", service=entry.service, level=entry.level.value)
         return _FALLBACK
 
     def _parse(self, response: str) -> tuple[str, str]:
