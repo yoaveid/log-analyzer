@@ -64,26 +64,30 @@ def run(
             s.stats.record_malformed()
             continue
 
-        s.stats.update(entry)
-        cluster_id = s.normalizer.parse(entry.message).cluster_id
-        emb = s.embedder.encode(entry.message)
-        all_anomalies += s.detector.process_entry(entry, emb, cluster_id)
-        s.knowledge_store.add_if_novel(emb, {"message": entry.message, "level": entry.level.value})
+        try:
+            s.stats.update(entry)
+            cluster_id = s.normalizer.parse(entry.message).cluster_id
+            emb = s.embedder.encode(entry.message)
+            all_anomalies += s.detector.process_entry(entry, emb, cluster_id)
+            s.knowledge_store.add_if_novel(emb, {"message": entry.message, "level": entry.level.value})
 
-        if entry.level in CRITICAL_LEVELS:
-            cached = s.cache.get(entry)
-            if cached:
-                root_cause, mitigation = cached
-            else:
-                root_cause, mitigation = s.llm.analyze(entry)
-                s.cache.set(entry, root_cause, mitigation)
+            if entry.level in CRITICAL_LEVELS:
+                cached = s.cache.get(entry)
+                if cached:
+                    root_cause, mitigation = cached
+                else:
+                    root_cause, mitigation = s.llm.analyze(entry)
+                    s.cache.set(entry, root_cause, mitigation)
 
-            enriched_errors.append(EnrichedLogEntry(
-                **entry.model_dump(),
-                root_cause=root_cause,
-                mitigation=mitigation,
-                cache_hit=cached is not None,
-            ))
+                enriched_errors.append(EnrichedLogEntry(
+                    **entry.model_dump(),
+                    root_cause=root_cause,
+                    mitigation=mitigation,
+                    cache_hit=cached is not None,
+                ))
+        except Exception:
+            logger.exception("entry_processing_failed", service=entry.service, message=entry.message)
+            s.stats.record_malformed()
 
     logger.info(
         "pipeline_completed",
