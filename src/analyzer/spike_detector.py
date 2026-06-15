@@ -63,7 +63,7 @@ class SpikeDetector:
                 description=(
                     f"Spike on template cluster {cluster_id}: "
                     f"{cur_count} events in {self._bucket_sec}s "
-                    f"(z > {self._z_threshold}σ)"
+                    f"(z > {self._z_threshold})"
                 ),
                 entries=[entry],
             )

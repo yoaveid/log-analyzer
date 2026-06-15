@@ -1,0 +1,71 @@
+2024-01-15T10:00:02Z INFO  api-gateway Request received from client 192.168.1.10
+2024-01-15T10:00:05Z ERROR auth-service JWT validation failed for user_id=42
+2024-01-15T10:00:08Z DEBUG db-service Connection pool size: 10/50
+2024-01-15T10:00:11Z ERROR db-service Connection pool exhausted on port 5432
+2024-01-15T10:00:14Z WARNING api-gateway Response time exceeded 500ms threshold
+this line is malformed and should be skipped gracefully
+2024-01-15T10:01:03Z INFO  auth-service User login successful for user_id=99
+2024-01-15T10:01:10Z ERROR db-service Connection pool exhausted on port 5433
+2024-01-15T10:01:22Z ERROR auth-service JWT validation failed for user_id=17
+2024-01-15T10:01:35Z WARNING db-service Slow query detected: 1200ms on table=orders
+2024-01-15T10:02:04Z INFO  api-gateway Health check passed
+2024-01-15T10:02:18Z ERROR db-service Connection pool exhausted on port 5434
+2024-01-15T10:02:31Z ERROR auth-service JWT validation failed for user_id=88
+2024-01-15T10:02:44Z ERROR api-gateway Upstream service timeout after 3000ms
+2024-01-15T10:03:05Z DEBUG db-service Connection pool size: 48/50
+2024-01-15T10:03:19Z ERROR db-service Connection pool exhausted on port 5432
+2024-01-15T10:03:33Z ERROR auth-service JWT validation failed for user_id=5
+2024-01-15T10:04:01Z INFO  api-gateway Request received from client 192.168.1.22
+2024-01-15T10:04:15Z ERROR db-service Connection pool exhausted on port 5435
+2024-01-15T10:04:29Z ERROR api-gateway Upstream service timeout after 3000ms
+2024-01-15T10:04:43Z WARNING auth-service Rate limit approaching for ip=10.0.0.5
+not a valid log line either
+2024-01-15T10:05:01Z ERROR db-service Connection pool exhausted on port 5432
+2024-01-15T10:05:06Z CRITICAL db-service Deadlock detected on table=transactions thread_id=204
+2024-01-15T10:05:11Z ERROR auth-service JWT validation failed for user_id=31
+2024-01-15T10:05:16Z CRITICAL auth-service Authentication service unresponsive after 5 retries
+2024-01-15T10:05:21Z ERROR api-gateway Upstream service timeout after 3000ms
+2024-01-15T10:05:26Z ERROR db-service Connection pool exhausted on port 5433
+2024-01-15T10:06:02Z ERROR db-service Connection pool exhausted on port 5432
+2024-01-15T10:06:07Z CRITICAL db-service Deadlock detected on table=payments thread_id=311
+2024-01-15T10:06:12Z ERROR auth-service JWT validation failed for user_id=76
+2024-01-15T10:06:17Z CRITICAL auth-service Authentication service unresponsive after 5 retries
+2024-01-15T10:06:22Z ERROR api-gateway Upstream service timeout after 3000ms
+2024-01-15T10:06:27Z ERROR api-gateway Circuit breaker opened for service=inventory
+2024-01-15T10:06:32Z ERROR db-service Write operation failed: disk quota exceeded
+2024-01-15T10:07:03Z ERROR db-service Connection pool exhausted on port 5432
+2024-01-15T10:07:08Z CRITICAL db-service Out of memory: process killed by OOM killer
+2024-01-15T10:07:13Z ERROR auth-service JWT validation failed for user_id=54
+2024-01-15T10:07:18Z CRITICAL api-gateway Service unavailable: all upstream nodes unreachable
+2024-01-15T10:07:23Z ERROR db-service Write operation failed: disk quota exceeded
+2024-01-15T10:07:28Z ERROR api-gateway Circuit breaker opened for service=payments
+2024-01-15T10:08:01Z ERROR db-service Connection pool exhausted on port 5432
+2024-01-15T10:08:03Z ERROR db-service Connection pool exhausted on port 5433
+2024-01-15T10:08:05Z ERROR db-service Connection pool exhausted on port 5434
+2024-01-15T10:08:07Z ERROR db-service Connection pool exhausted on port 5435
+2024-01-15T10:08:09Z ERROR db-service Connection pool exhausted on port 5436
+2024-01-15T10:08:11Z ERROR db-service Connection pool exhausted on port 5437
+2024-01-15T10:08:13Z ERROR db-service Connection pool exhausted on port 5438
+2024-01-15T10:08:15Z ERROR db-service Connection pool exhausted on port 5439
+2024-01-15T10:08:17Z ERROR db-service Connection pool exhausted on port 5440
+2024-01-15T10:08:19Z ERROR db-service Connection pool exhausted on port 5441
+2024-01-15T10:08:21Z ERROR db-service Connection pool exhausted on port 5442
+2024-01-15T10:08:23Z ERROR db-service Connection pool exhausted on port 5443
+2024-01-15T10:09:05Z INFO  db-service Connection pool recovered: 10/50 active
+2024-01-15T10:09:18Z INFO  auth-service Authentication service back online
+2024-01-15T10:09:31Z ERROR api-gateway SSL certificate validation failed for host=payments.internal
+2024-01-15T10:10:02Z WARNING db-service Replication lag detected: 45 seconds behind primary
+2024-01-15T10:10:15Z ERROR auth-service OAuth token exchange failed: provider=google status=503
+2024-01-15T10:10:28Z CRITICAL db-service Primary replica failover initiated
+2024-01-15T10:11:04Z INFO  api-gateway Circuit breaker closed for service=inventory
+2024-01-15T10:11:17Z ERROR db-service Foreign key constraint violation on table=orders
+2024-01-15T10:11:30Z WARNING api-gateway Memory usage at 87% of limit
+2024-01-15T10:12:03Z INFO  auth-service Token refresh completed for user_id=42
+2024-01-15T10:12:16Z ERROR api-gateway SSL certificate validation failed for host=auth.internal
+2024-01-15T10:13:01Z DEBUG db-service Vacuum operation started on table=logs
+2024-01-15T10:13:14Z ERROR db-service Connection pool exhausted on port 5432
+2024-01-15T10:14:02Z INFO  api-gateway Request received from client 192.168.1.10
+2024-01-15T10:14:15Z WARNING auth-service Failed login attempts exceeded threshold for ip=10.0.0.99
+2024-01-15T10:14:28Z ERROR db-service Connection pool exhausted on port 5433
+2024-01-15T10:15:01Z INFO  api-gateway Health check passed
+2024-01-15T10:15:14Z DEBUG auth-service Session cleanup completed: 234 expired sessions removed

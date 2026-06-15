@@ -57,6 +57,10 @@ cover/
 
 # Django stuff:
 *.log
+!data/sample_logs/*.log
+
+# Generated output
+data/output/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal

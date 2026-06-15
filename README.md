@@ -60,7 +60,7 @@ pip install -r requirements.txt
 ## Usage
 
 ```bash
-python main.py path/to/app.log
+python main.py data/sample_logs/sample.log
 ```
 
 With options:
