@@ -17,10 +17,14 @@ logging:
   format: "text"      # "text" for local dev, "json" for production
 
 anomaly:
-  burst_threshold: 5
   novelty_threshold: 0.65
   min_store_size: 30
   spike:
     bucket_seconds: 60
     z_threshold: 2.5
     min_history: 5
+    min_spike_count: 5
+  burst:
+    bucket_seconds: 60
+    threshold_per_bucket: 5
+    consecutive_buckets: 3

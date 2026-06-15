@@ -1,15 +1,13 @@
-from __future__ import annotations
-
 from typing import Optional
 
+import numpy as np
 import structlog
 
 from src.models.log_entry import LogEntry
+from src.store.embedding_store import EmbeddingStore
+from src.models.anomaly import Anomaly
 
 logger = structlog.get_logger(__name__)
-from src.store.embedding_store import EmbeddingStore
-from src.store.embedder import EmbedderProtocol
-from src.models.anomaly import Anomaly
 
 
 class NoveltyDetector:
@@ -18,21 +16,18 @@ class NoveltyDetector:
     def __init__(
         self,
         store: EmbeddingStore,
-        embedder: EmbedderProtocol,
         threshold: float = 0.65,
         min_store_size: int = 30,
     ):
         self._threshold = threshold
         self._min_store_size = min_store_size
         self._store = store
-        self._embedder = embedder
 
-    def check(self, entry: LogEntry) -> Optional[Anomaly]:
+    def check(self, entry: LogEntry, embedding: np.ndarray) -> Optional[Anomaly]:
         if self._store.size <= self._min_store_size:
             return None
 
-        emb = self._embedder.encode(entry.message)
-        result = self._store.best_match(emb)
+        result = self._store.best_match(embedding)
         is_novel = result is None or result.similarity < self._threshold
 
         if is_novel:

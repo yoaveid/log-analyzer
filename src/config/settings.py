@@ -25,13 +25,20 @@ class SpikeConfig(BaseModel):
     bucket_seconds: int
     z_threshold: float
     min_history: int
+    min_spike_count: int
+
+
+class BurstConfig(BaseModel):
+    bucket_seconds: int
+    threshold_per_bucket: int
+    consecutive_buckets: int
 
 
 class AnomalyConfig(BaseModel):
-    burst_threshold: int
     novelty_threshold: float
     min_store_size: int
     spike: SpikeConfig
+    burst: BurstConfig
 
 
 class LogConfig(BaseModel):

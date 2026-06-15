@@ -41,7 +41,7 @@ def build_services(config: AppConfig) -> PipelineServices:
         knowledge_store=knowledge_store,
         llm_store=llm_store,
         normalizer=normalizer,
-        detector=AnomalyDetector(store=knowledge_store, embedder=embedder, config=config.anomaly),
+        detector=AnomalyDetector(store=knowledge_store, config=config.anomaly),
         cache=AnalysisCache(store=llm_store, embedder=embedder, config=config.cache),
     )
 
@@ -68,7 +68,7 @@ def run(
         cluster_id = s.normalizer.parse(entry.message).cluster_id
         emb = s.embedder.encode(entry.message)
         s.knowledge_store.add(emb, {"message": entry.message, "level": entry.level.value})
-        all_anomalies += s.detector.process_entry(entry, cluster_id)
+        all_anomalies += s.detector.process_entry(entry, emb, cluster_id)
 
         if entry.level in CRITICAL_LEVELS:
             cached = s.cache.get(entry)
