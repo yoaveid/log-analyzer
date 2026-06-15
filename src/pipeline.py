@@ -67,8 +67,8 @@ def run(
         s.stats.update(entry)
         cluster_id = s.normalizer.parse(entry.message).cluster_id
         emb = s.embedder.encode(entry.message)
-        s.knowledge_store.add(emb, {"message": entry.message, "level": entry.level.value})
         all_anomalies += s.detector.process_entry(entry, emb, cluster_id)
+        s.knowledge_store.add_if_novel(emb, {"message": entry.message, "level": entry.level.value})
 
         if entry.level in CRITICAL_LEVELS:
             cached = s.cache.get(entry)

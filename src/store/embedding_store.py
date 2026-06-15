@@ -54,6 +54,16 @@ class EmbeddingStore:
         results = self.search(embedding, k=1)
         return results[0] if results else None
 
+    def add_if_novel(
+        self, embedding: np.ndarray, metadata: dict[str, Any], dedup_threshold: float = 0.95
+    ) -> bool:
+        """Add only if no existing vector exceeds dedup_threshold similarity. Returns True if added."""
+        match = self.best_match(embedding)
+        if match is not None and match.similarity >= dedup_threshold:
+            return False
+        self.add(embedding, metadata)
+        return True
+
     def update_metadata(self, index: int, updates: dict[str, Any]) -> None:
         """Merge updates into an existing entry's metadata (e.g. add LLM results)."""
         self._metadata[index].update(updates)
