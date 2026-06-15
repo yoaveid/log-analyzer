@@ -2,9 +2,13 @@ import json
 from pathlib import Path
 from typing import Sequence
 
+import structlog
+
 from src.analyzer.anomaly import Anomaly
 from src.analyzer.stats import LogStats
 from src.models.log_entry import EnrichedLogEntry
+
+logger = structlog.get_logger(__name__)
 
 
 def write_report(
@@ -49,3 +53,4 @@ def write_report(
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w") as f:
         json.dump(report, f, indent=2)
+    logger.info("report_written", path=str(output_path), enriched_errors=len(entries), anomalies=len(anomalies))

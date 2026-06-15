@@ -1,9 +1,13 @@
 from collections import defaultdict, deque
 from typing import Optional
 
+import structlog
+
 from src.config.settings import BurstConfig
 from src.models.log_entry import LogEntry
 from src.models.anomaly import Anomaly
+
+logger = structlog.get_logger(__name__)
 
 
 class BurstDetector:
@@ -66,6 +70,14 @@ class BurstDetector:
             c >= self._threshold for c in preceding
         ):
             return None
+        logger.warning(
+            "burst_detected",
+            cluster_id=cluster_id,
+            threshold=self._threshold,
+            consecutive_buckets=self._required,
+            bucket_seconds=self._bucket_sec,
+            service=entry.service,
+        )
         return Anomaly(
             kind="burst",
             description=(

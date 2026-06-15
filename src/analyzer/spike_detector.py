@@ -2,9 +2,13 @@ import math
 from collections import defaultdict, deque
 from typing import Optional
 
+import structlog
+
 from src.config.settings import SpikeConfig
 from src.models.log_entry import LogEntry
 from src.models.anomaly import Anomaly
+
+logger = structlog.get_logger(__name__)
 
 
 class SpikeDetector:
@@ -58,6 +62,13 @@ class SpikeDetector:
         self._current[cluster_id] = (next_start, 1)
 
         if is_spike:
+            logger.warning(
+                "spike_detected",
+                cluster_id=cluster_id,
+                count=cur_count,
+                bucket_seconds=self._bucket_sec,
+                service=entry.service,
+            )
             return Anomaly(
                 kind="spike",
                 description=(

@@ -2,9 +2,12 @@ import importlib
 from typing import Optional, Protocol
 
 import numpy as np
+import structlog
 
 from src.store.normalizer import LogNormalizer
 from src.config.settings import EmbedderConfig
+
+logger = structlog.get_logger(__name__)
 
 
 class EmbedderProtocol(Protocol):
@@ -29,6 +32,8 @@ class Embedder:
 
     def _load(self):
         if self._model is None:
+            logger.info("loading_embedding_model", model=self._model_name)
             sentence_transformers = importlib.import_module("sentence_transformers")
             self._model = sentence_transformers.SentenceTransformer(self._model_name)
+            logger.info("embedding_model_ready", model=self._model_name)
         return self._model
